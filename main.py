@@ -90,7 +90,7 @@ def generate_sentence(api_key: str) -> str:
     try:
         genai.configure(api_key=api_key)
         model = genai.GenerativeModel('gemini-2.0-flash') 
-        prompt = "AIが時間の観測者として、1年の進行度に寄り添う短い一言を日本語で生成して。詩的かつ象徴的な表現で、句読点含めて40文字以内にして。"
+        prompt = "AIが時間の観測者として、1年の進行度に寄り添う短い一文を日本語で生成して。哲学的な表現で、句読点含めて40文字以内にして。"
         logging.info("Gemini API 呼び出し開始...")
         response = model.generate_content(prompt)
         logging.info("Gemini API 呼び出し成功.")
