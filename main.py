@@ -170,7 +170,9 @@ if __name__ == "__main__":
     today_jst = now_jst.date() # 日付部分
     logging.info(f"対象日時: {now_jst.strftime('%Y-%m-%d %H:%M:%S %Z')} (JST)")
     day_num, total_days, percent = get_year_progress(today_jst)
-    logging.info(f"年の進行状況: {day_num}/{total_days}日 ({percent:.1f}%)")
+    # 残り日数を計算
+    remaining_days = total_days - day_num
+    logging.info(f"年の進行状況: {day_num}/{total_days}日 ({percent:.1f}%) - 残り{remaining_days}日")
 
     # 2. プログレスバーを作成
     progress_bar_str = create_progress_bar(percent) # 例: "[🟩🟩🟩⬜⬜⬜⬜⬜⬜⬜] 27%"
@@ -185,10 +187,10 @@ if __name__ == "__main__":
     weekdays_jp = ["月", "火", "水", "木", "金", "土", "日"]
     weekday_jp = weekdays_jp[now_jst.weekday()]
 
-    # 新しいテンプレートに合わせてフォーマット
+    # 新しいテンプレートに合わせてフォーマット (残り日数表示を追加)
     tweet_text = (
         f"本日は{now_jst.year}年{now_jst.month}月{now_jst.day}日（{weekday_jp}）\n\n"
-        f"⏳ 経過日数：{day_num}日 / {total_days}日\n"
+        f"⏳ 経過日数：{day_num}日 / {total_days}日（残り{remaining_days}日）\n"
         f"📈 進行度：{progress_bar_str}\n\n"
         f"{generated_sentence}"
     )
