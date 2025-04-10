@@ -6,7 +6,7 @@
 
 ```mermaid
 graph TD
-    A[GitHub Actions スケジュール起動 (毎週日曜 23:00 UTC)] --> B(ワークフロー実行開始);
+    A[GitHub Actions スケジュール起動 (毎日 23:00 UTC)] --> B(ワークフロー実行開始);
     B --> C{Docker コンテナ起動};
     C --> D[リポジトリからコードをチェックアウト];
     D --> E[Python スクリプト実行];
@@ -65,7 +65,7 @@ chrona-bot/
 
 **各ファイル/ディレクトリの説明:**
 
-*   `.github/workflows/cron_tweet.yml`: 毎週の自動実行を定義する GitHub Actions ワークフローファイル。
+*   `.github/workflows/cron_tweet.yml`: 毎日の自動実行を定義する GitHub Actions ワークフローファイル。
 *   `.gitignore`: `.env` ファイル、`.venv` フォルダ、Python のキャッシュファイル (`__pycache__`) など、リポジトリに含めたくないものを指定します。
 *   `Dockerfile`: Python 実行環境、必要なライブラリを含む Docker イメージを定義します。
 *   `requirements.txt`: `pip install -r requirements.txt` で必要な Python ライブラリをインストールできるようにリスト化します (`tweepy`, `python-dotenv`, `google-generativeai` など)。
