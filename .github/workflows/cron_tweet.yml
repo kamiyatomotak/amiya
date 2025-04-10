@@ -1,6 +1,6 @@
 # .github/workflows/cron_tweet.yml
 
-name: Chrona Bot - Weekly Tweet
+name: Chrona Bot - Daily Tweet
 
 on:
   schedule:
