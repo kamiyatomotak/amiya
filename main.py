@@ -65,20 +65,27 @@ def create_progress_bar(percentage: float) -> str:
     """
     # パーセンテージが0未満または100超の場合は丸める
     percentage = max(0.0, min(100.0, percentage))
-    # round() を使用して四捨五入する
-    filled_width = round(PROGRESS_BAR_WIDTH * percentage / 100)
-    # filled_width がバーの幅を超えないように念のため制限
-    filled_width = min(PROGRESS_BAR_WIDTH, filled_width)
+
+    # 新しい仕様: 進行率 / 10 の切り捨てで本数を決定
+    if percentage == 100.0:
+        filled_width = PROGRESS_BAR_WIDTH
+    else:
+        filled_width = math.floor(percentage / (100 / PROGRESS_BAR_WIDTH))
+
     empty_width = PROGRESS_BAR_WIDTH - filled_width
     bar = FILLED_SYMBOL * filled_width + EMPTY_SYMBOL * empty_width
-    # %.0f で整数表示 
+    # %.0f で整数表示 (これは元々四捨五入)
     return f"[{bar}] {percentage:.0f}%"
 
-def generate_sentence(api_key: str) -> str:
+def generate_sentence(api_key: str, current_day_of_year: int, total_days_in_year: int, progress_percentage: float) -> str:
     """Google Gemini API を使用して、示唆に富んだ一文を生成します。
+       日付と進行度からAIが自由に連想し、毎回異なる表現を目指します。
 
     Args:
         api_key: Google Gemini API キー。
+        current_day_of_year: 年の開始からの経過日数。
+        total_days_in_year: その年の総日数。
+        progress_percentage: 年の経過率 (%)。
 
     Returns:
         生成された一文。エラー時はデフォルトの文章を返す。
@@ -89,17 +96,35 @@ def generate_sentence(api_key: str) -> str:
 
     try:
         genai.configure(api_key=api_key)
-        model = genai.GenerativeModel('gemini-2.0-flash') 
-        prompt = "AIが時間の観測者として、1年の進行度に寄り添う短い一文を日本語で生成して。哲学的な表現で、句読点含めて40文字以内にして。"
-        logging.info("Gemini API 呼び出し開始...")
+        model = genai.GenerativeModel('gemini-2.0-flash')
+
+        # プロンプト本体: 事実を伝え、AIの自由な解釈に委ねる
+        prompt_parts = [
+            f"今日は1年{total_days_in_year}日のうち{current_day_of_year}日目、{progress_percentage:.1f}%が経過しました。",
+            "この情報だけを頼りに、今日という日、この瞬間の時の流れを象徴する、",
+            "詩的で、示唆に富む短い一文を日本語で創作してください。",
+            "必ず1つの文章で、箇条書きや複数行は使わないでください。",
+            "句読点を含めて全体で40文字以内が望ましいですが、言葉が溢れるなら多少の調整は許容します。",
+            "あなたの独創的な感性で、他のどの日の言葉とも違う、今日だけの特別な一言をお願いします。"
+        ]
+        prompt = " ".join(prompt_parts)
+
+        logging.info(f"Gemini API 呼び出し開始 (プロンプトヒント: 「今日は1年{total_days_in_year}日のうち{current_day_of_year}日目...」)")
         response = model.generate_content(prompt)
         logging.info("Gemini API 呼び出し成功.")
-        # response.text でテキスト部分を取得
         generated_text = response.text.strip()
-        # 簡単なバリデーション（空でないかなど）
-        if generated_text:
+
+        if generated_text and "\\n" not in generated_text:
+             if generated_text.startswith("*") or generated_text.startswith("・") or generated_text.startswith("-"):
+                 generated_text = generated_text[1:].strip()
              return generated_text
-        else:
+        elif generated_text and "\\n" in generated_text: # 複数行の場合
+             logging.warning(f"Gemini APIから複数行の応答がありました: {generated_text.splitlines()[0]} ...。最初の行を使用します。")
+             first_line = generated_text.splitlines()[0].strip()
+             if first_line.startswith("*") or first_line.startswith("・") or first_line.startswith("-"):
+                 first_line = first_line[1:].strip()
+             return first_line
+        else: # 空の場合
              logging.warning("Gemini APIから空の応答がありました。デフォルトの文章を使用します。")
              return DEFAULT_SENTENCE
 
@@ -179,7 +204,7 @@ if __name__ == "__main__":
     logging.info(f"プログレスバー: {progress_bar_str}")
 
     # 3. Gemini API で一文を生成
-    generated_sentence = generate_sentence(GEMINI_API_KEY)
+    generated_sentence = generate_sentence(GEMINI_API_KEY, day_num, total_days, percent)
     logging.info(f"生成された/代替の文章: {generated_sentence}")
 
     # 4. ツイート本文を組み立て
