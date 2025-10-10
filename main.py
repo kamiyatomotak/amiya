@@ -7,10 +7,10 @@ import google.generativeai as genai
 from dotenv import load_dotenv
 
 # --- 定数 ---
-PROGRESS_BAR_WIDTH = 10
-FILLED_SYMBOL = "🟩"
-EMPTY_SYMBOL = "⬜"
-DEFAULT_SENTENCE = "時間は静かに流れ続けます。"
+PROGRESS_BAR_WIDTH = 12
+FILLED_SYMBOL = "🐧"
+EMPTY_SYMBOL = "□"
+DEFAULT_SENTENCE = "何もしないままでいいのか？"
 LOG_FORMAT = '%(asctime)s - %(levelname)s - %(message)s'
 
 # --- ロギング設定 ---
@@ -101,8 +101,7 @@ def generate_sentence(api_key: str, current_day_of_year: int, total_days_in_year
         # プロンプト本体: 事実を伝え、AIの自由な解釈に委ねる
         prompt_parts = [
             f"今日は1年{total_days_in_year}日のうち{current_day_of_year}日目、{progress_percentage:.1f}%が経過しました。",
-            "この情報だけを頼りに、今日という日、この瞬間の時の流れを象徴する、",
-            "詩的で、示唆に富む短い一文を日本語で創作してください。",
+            "ITインフラエンジニアとしてのマインドを辛口で35文字程度でコメントする",
             "必ず1つの文章で、箇条書きや複数行は使わないでください。",
             "句読点を含めて全体で40文字以内が望ましいですが、言葉が溢れるなら多少の調整は許容します。",
             "あなたの独創的な感性で、他のどの日の言葉とも違う、今日だけの特別な一言をお願いします。"
@@ -214,10 +213,12 @@ if __name__ == "__main__":
 
     # 新しいテンプレートに合わせてフォーマット (残り日数表示を追加)
     tweet_text = (
-        f"本日は{now_jst.year}年{now_jst.month}月{now_jst.day}日（{weekday_jp}）\n\n"
-        f"⏳ 経過日数：{day_num}日 / {total_days}日（残り{remaining_days}日）\n"
-        f"📈 進行度：{progress_bar_str}\n\n"
+        f"======================================\n"
+        f"★本日は{now_jst.year}年{now_jst.month}月{now_jst.day}日（{weekday_jp}）★\n\n"
+        f"🐧経過日数：{day_num}日 / {total_days}日（残り{remaining_days}日）\n"
+        f"💻：{progress_bar_str}\n\n"
         f"{generated_sentence}"
+        f"======================================\n"
     )
     logging.info(f"生成されたツイート本文:\n{tweet_text}")
 
