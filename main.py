@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 
 # --- 定数 ---
 PROGRESS_BAR_WIDTH = 12
-FILLED_SYMBOL = "🐧"
+FILLED_SYMBOL = "🟩"
 EMPTY_SYMBOL = "□"
 DEFAULT_SENTENCE = "何もしないままでいいのか？"
 LOG_FORMAT = '%(asctime)s - %(levelname)s - %(message)s'
@@ -213,12 +213,12 @@ if __name__ == "__main__":
 
     # 新しいテンプレートに合わせてフォーマット (残り日数表示を追加)
     tweet_text = (
-        f"======================================\n"
-        f"★本日は{now_jst.year}年{now_jst.month}月{now_jst.day}日（{weekday_jp}）★\n\n"
-        f"🐧経過日数：{day_num}日 / {total_days}日（残り{remaining_days}日）\n"
-        f"💻：{progress_bar_str}\n\n"
+        f"==============================\n"
+        f"【 本日は{now_jst.year}年{now_jst.month}月{now_jst.day}日({weekday_jp}) 】\n\n"
+        f"経過：{day_num}日 / {total_days}日（残り{remaining_days}日）\n"
+        f"進捗：{progress_bar_str}\n\n"
         f"{generated_sentence}"
-        f"======================================\n"
+        f"==============================\n"
     )
     logging.info(f"生成されたツイート本文:\n{tweet_text}")
 
