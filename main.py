@@ -101,10 +101,9 @@ def generate_sentence(api_key: str, current_day_of_year: int, total_days_in_year
         # プロンプト本体: 事実を伝え、AIの自由な解釈に委ねる
         prompt_parts = [
             f"今日は1年{total_days_in_year}日のうち{current_day_of_year}日目、{progress_percentage:.1f}%が経過しました。",
-            "ITインフラエンジニアとしてのマインドを辛口で35文字程度でコメントする",
             "必ず1つの文章で、箇条書きや複数行は使わないでください。",
+            "敬語を使い、ですます調でエンジニアのマインドを発信してください",
             "句読点を含めて全体で40文字以内が望ましいですが、言葉が溢れるなら多少の調整は許容します。",
-            "あなたの独創的な感性で、他のどの日の言葉とも違う、今日だけの特別な一言をお願いします。"
         ]
         prompt = " ".join(prompt_parts)
 
